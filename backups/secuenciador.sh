@@ -4,7 +4,9 @@
 #sirve para generar información sobre la que prácticas la realización de copias de seguridad
 #
 #Para descargarlo y ejecutarlo copia y pega el siguiente código comentado 
+#curl -o secuenciador.sh https://raw.githubusercontent.com/axenedu/seguridad-informatica/main/backups/secuenciador.sh
 #
+#crontab ./crontab
 DIR=$HOME
 #Directorio en el que se creará el archivo si hay parámetro
 [ $1 ] && DIR=$1
