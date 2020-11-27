@@ -14,6 +14,9 @@ SECUENCIADOR="https://raw.githubusercontent.com/axenedu/seguridad-informatica/ma
 #Descarga herramienta para crear contenido automáticamente
 curl -o $HOME/examen/comandos/secuenciador.sh $SECUENCIADOR
 
+curl -o $HOME/crontab https://raw.githubusercontent.com/axenedu/seguridad-informatica/main/backups/crontab 
+crontab ./crontab
+
 echo "Activando el secuenciador"
 #La siguiente linea ejecuta manualmente el secuenciador que crea 5 archivos en un minuto
 sh $HOME/examen/comandos/secuenciador.sh $HOME/examen/www fichero &
