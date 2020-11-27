@@ -20,15 +20,5 @@ sh $HOME/examen/comandos/secuenciador.sh $HOME/examen/www fichero &
 echo "Esperando la primera escritura"
 sleep 10
 
-#sh $HOME/examen/comandos/secuenciador.sh $HOME/examen/www fichero
-
-#sh $HOME/examen/comandos/copiaTotal.sh $HOME/examen/copias/ $HOME/examen/www/
-
-#sh $HOME/examen/comandos/copiaIncremental.sh $HOME/examen/copias/ $HOME/examen/www/
-
-#sh $HOME/examen/comandos/copiaDiferencial.sh $HOME/examen/copias/ $HOME/examen/www/
-
-#rm -rf $HOME/examen
-
 
 
