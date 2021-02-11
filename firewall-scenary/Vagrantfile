@@ -5,6 +5,8 @@ iptables -I OUTPUT -o enp0s3 -j DROP
 iptables -I INPUT -i enp0s3 -j DROP
 iptables -I INPUT -i enp0s3 -p tcp --dport 22 -j ACCEPT
 iptables -I OUTPUT -o enp0s3 -p tcp --sport 22 -j ACCEPT
+iptables -I OUTPUT -o lo -j ACCEPT
+iptables -I INPUT -i lo -j ACCEPT
 rm /etc/resolv.conf
 echo "nameserver 1.1.1.1" >/etc/resolv.conf
 echo "nameserver 8.8.8.8" >>/etc/resolv.conf
