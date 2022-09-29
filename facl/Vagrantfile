@@ -68,6 +68,7 @@ Vagrant.configure("2") do |config|
      mkdir /accounting
      chown accounting:accounting /accounting
      chmod g+w /accounting/
-     chmod o-rwx /accounting/ 
+     chmod o-rwx /accounting/
+     usermod -a -G accounting fred
   SHELL
 end
