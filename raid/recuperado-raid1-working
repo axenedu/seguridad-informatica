@@ -1,0 +1,18 @@
+sudo mdadm --detail --scan
+cat /proc/mdstat 
+sudo mdadm /dev/md0 --fail sdd
+sudo fdisk -l
+sudo mdadm stop /dev/md0 
+sudo mdadm --stop /dev/md0 
+sudo mdadm --assemble --scan --verbose
+cat /proc/mdstat 
+sudo mdadm --add /dev/md0 /dev/sdc
+cd carpeta-raid1/
+ls
+sudo mount /dev/md0 ./
+ls
+ls -als
+cd ..
+cd carpeta-raid1/
+ls -als
+history -w /vagrant/recuperado-raid1-working
