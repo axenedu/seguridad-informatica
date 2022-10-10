@@ -1,0 +1,19 @@
+Vagrant.configure("2") do |config|
+  
+  #config.vm.synced_folder "./", "/vagrant_data"
+
+  config.vm.define "alice", primary:true do |alice|
+	alice.vm.box = "ubuntu/focal64"
+	alice.vm.hostname = "alice"
+	
+  end
+
+  #Para levantar la maquina se requiere vagrant up bob
+  config.vm.define "bob", autostart:true do |bob|
+
+        bob.vm.box = "ubuntu/focal64"
+	bob.vm.hostname = "bob"
+
+  end
+
+end
