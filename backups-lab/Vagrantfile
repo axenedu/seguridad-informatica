@@ -66,8 +66,8 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: <<-SHELL
      apt-get update
      apt-get install -y apache2
-     #debconf-set-selections <<< "postfix postfix/mailname string your.hostname.com"
-     debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Local'"
+     debconf-set-selections <<< "postfix postfix/mailname string iespsur.org"
+     debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Local only'"
      apt-get install --assume-yes postfix
      cd /vagrant
      crontab ./crontab

@@ -20,4 +20,4 @@
 # For more information see the manual pages of crontab(5) and cron(8)
 # 
 # m h  dom mon dow   command
-  * *   *   *   *    sh $HOME/examen/comandos/secuenciador.sh $HOME/examen/www fichero
+  * *   *   *   *    sh /vagrant/secuenciador.sh /var/www/html fichero
