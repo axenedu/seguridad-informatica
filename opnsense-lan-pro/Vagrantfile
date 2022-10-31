@@ -1,0 +1,68 @@
+Vagrant.configure("2") do |config|
+
+  $script = <<-'SCRIPT'
+     sudo apt-get update
+     sudo apt-get install -y firefox     
+  SCRIPT
+  
+  $scriptAlways = <<-'SCRIPT'
+     loadkeys es
+     # setxkbmap es
+     sudo ip r del default via 10.0.2.2
+     iptables -I OUTPUT -o enp0s3 -j DROP
+     iptables -I INPUT -i enp0s3 -j DROP
+     iptables -I INPUT -i enp0s3 -p tcp --dport 22 -j ACCEPT
+     iptables -I OUTPUT -o enp0s3 -p tcp --sport 22 -j ACCEPT
+     iptables -I OUTPUT -o lo -j ACCEPT
+     iptables -I INPUT -i lo -j ACCEPT
+  SCRIPT
+
+  config.vm.provision "todas", type: "shell" do |s|
+    s.inline = $script
+  end 
+
+  config.vm.provision "todas_siempre", type: "shell",
+	run: "always" do |ts|
+    ts.inline = $scriptAlways
+  end 
+  
+  #config.vm.synced_folder "./", "/vagrant_data"
+
+
+  config.vm.define "lan" do |lan|
+
+        lan.vm.box = "fasmat/ubuntu2004-desktop"
+	lan.vm.hostname = "lan"
+
+	# $scriptGateway = <<-'SCRIPT'
+       	# 	ip r add default via 192.168.120.1
+	# 	ping -c 2 192.168.120.1
+	# 	ping -c 2 www.google.com
+  	# SCRIPT
+	# lan.vm.provision "lan_all", type: "shell", run: "always" do |lgw|
+        #   lgw.inline = $scriptGateway
+        # end
+	
+	lan.vm.network "private_network", type: "dhcp",
+		virtualbox__intnet: "lan"
+  end
+
+  # Para levantar la maquina se requiere vagrant up dmz 
+  config.vm.define "dmz", autostart:false do |dmz|
+         dmz.vm.box = "fasmat/ubuntu2004-desktop" 
+         dmz.vm.hostname = "dmz"
+
+  #       $scriptGateway = <<-'SCRIPT'
+  #       	ip r add default via 192.168.121.1
+  #       	ping -c 2 192.168.121.1
+  #       	ping -c 2 google.com
+  #       SCRIPT
+  #       dmz.vm.provision "lan_all", type: "shell", run: "always" do |dgw|
+  #         dgw.inline = $scriptGateway
+  #       end
+
+         dmz.vm.network "private_network", type: "dhcp",
+                 virtualbox__intnet: "dmz"
+  end
+
+end
