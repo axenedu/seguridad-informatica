@@ -4,14 +4,26 @@ Vagrant.configure("2") do |config|
       gateway.vm.box = "ubuntu/focal64"
       gateway.vm.hostname = "gateway"
 
-      $scriptGateway = <<-'SCRIPT'
+      $scriptGatewayOnce = <<-'SCRIPT'
           echo 1 > /proc/sys/net/ipv4/ip_forward
           echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
-          iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
+          sudo apt-get update
+          sudo apt-get install -y isc-dhcp-server
+          sed -i 's/INTERFACESv4=""/INTERFACESv4="enp0s8"/g' /etc/default/isc-dhcp-server
+          cp /vagrant/dhcpd.conf /etc/dhcp/dhcpd.conf
+          service isc-dhcp-server restart
       SCRIPT
 
       gateway.vm.provision "gateway_once", type: "shell" do |fo|
-        fo.inline = $scriptGateway
+        fo.inline = $scriptGatewayOnce
+      end
+
+      $scriptGatewayAlways = <<-'SCRIPT'
+          iptables -t nat -A POSTROUTING -o enp0s3 -j MASQUERADE
+      SCRIPT
+
+      gateway.vm.provision "gateway_always", type: "shell", run: "always" do |fo|
+        fo.inline = $scriptGatewayAlways
       end
 
       gateway.vm.provision "conectividad", type: "shell",
@@ -36,10 +48,10 @@ Vagrant.configure("2") do |config|
       ip r del default via 10.0.2.2
 
       # Quitar al activar DHCP ---
-      ip r add default via 192.168.100.1
-      rm /etc/resolv.conf
-      echo "nameserver 1.1.1.1" >/etc/resolv.conf
-      echo "nameserver 8.8.8.8" >>/etc/resolv.conf
+#      ip r add default via 192.168.100.1
+#      rm /etc/resolv.conf
+#      echo "nameserver 1.1.1.1" >/etc/resolv.conf
+#      echo "nameserver 8.8.8.8" >>/etc/resolv.conf
       # Quitar al activar DHCP ---
 
       echo Comprobar conectividad gateway...
@@ -53,10 +65,10 @@ Vagrant.configure("2") do |config|
           lgw.inline = $scriptGateway
     end
 	
-	# lan.vm.network "private_network", type: "dhcp",
-	#   	virtualbox__intnet: "lan"
-	lan.vm.network "private_network", ip: "192.168.100.2",
-		virtualbox__intnet: "lan"
+	 lan.vm.network "private_network", type: "dhcp",
+	   	virtualbox__intnet: "lan"
+#	lan.vm.network "private_network", ip: "192.168.100.2",
+#		virtualbox__intnet: "lan"
   end
 
 # $script = <<-'SCRIPT'
