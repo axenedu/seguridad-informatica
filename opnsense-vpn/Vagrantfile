@@ -1,0 +1,60 @@
+Vagrant.configure("2") do |config|
+
+    config.vm.define "lan" do |lan|
+
+        lan.vm.box = "axenedu/ubuntu-focal64-desktop"
+        lan.vm.hostname = "lan"
+
+        lan.vm.network "private_network", type: "dhcp",
+            virtualbox__intnet: "lan"
+        config.vm.provider "virtualbox" do |vb|
+          #   # Display the VirtualBox GUI when booting the machine
+             vb.gui = true
+          #
+          #   # Customize the amount of memory on the VM:
+          #   vb.memory = "2048"
+        end
+    end
+
+  # Para levantar la maquina se requiere vagrant up dmz 
+  config.vm.define "dmz", autostart:false do |dmz|
+         dmz.vm.box = "axenedu/ubuntu-focal64-desktop"
+         dmz.vm.hostname = "dmz"
+
+         dmz.vm.network "private_network", type: "dhcp",
+                 virtualbox__intnet: "dmz"
+  end
+
+  # Para levantar la maquina se requiere vagrant up dmz
+  config.vm.define "outlander", autostart:false do |outlander|
+         outlander.vm.box = "axenedu/ubuntu-focal64-desktop"
+         outlander.vm.hostname = "outlander"
+
+         outlander.vm.network "public_network", type: "dhcp"
+  end
+
+# $script = <<-'SCRIPT'
+#      sudo apt-get update
+#      sudo apt-get install -y firefox
+#   SCRIPT
+#   config.vm.provision "todas", type: "shell" do |s|
+#     s.inline = $script
+#   end
+  $scriptAlways = <<-'SCRIPT'
+#      loadkeys es
+#      setxkbmap es
+     sudo ip r del default via 10.0.2.2
+#      iptables -I OUTPUT -o enp0s3 -j DROP
+#      iptables -I INPUT -i enp0s3 -j DROP
+#      iptables -I INPUT -i enp0s3 -p tcp --dport 22 -j ACCEPT
+#      iptables -I OUTPUT -o enp0s3 -p tcp --sport 22 -j ACCEPT
+#      iptables -I OUTPUT -o lo -j ACCEPT
+#      iptables -I INPUT -i lo -j ACCEPT
+  SCRIPT
+
+  config.vm.provision "todas_siempre", type: "shell",
+	run: "always" do |ts|
+    ts.inline = $scriptAlways
+  end
+
+end
