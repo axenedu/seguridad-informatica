@@ -19,7 +19,7 @@ fi
 
 sleep 10
 for i in $(seq 1 5); do
-   echo $(date "+%Y-%m-%d %H:%M:%S %N") >> $DIR/$FILE"_"$(date +%Y-%m-%d_%H:%M:)$((i*10))
+   echo $(date "+%Y-%m-%d %H:%M:%S %N") >> $DIR/$FILE"_"$(date +%Y-%m-%d_%H-%M-)$((i*10))
    sleep 10
 done;
 
