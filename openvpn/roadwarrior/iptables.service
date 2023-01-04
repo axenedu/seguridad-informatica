@@ -1,0 +1,10 @@
+[Unit]
+Description=Reglas de iptables
+After=systemd-sysctl.service
+
+[Service]
+Type=oneshot
+ExecStart=/sbin/iptables-restore /srv/masquerade.iptables
+
+[Install]
+WantedBy=multi-user.target

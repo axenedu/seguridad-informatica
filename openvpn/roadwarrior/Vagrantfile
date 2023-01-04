@@ -1,0 +1,74 @@
+Vagrant.configure("2") do |config|
+
+    config.vm.define "server" do |server|
+
+        server.vm.box = "ubuntu/focal64"
+        server.vm.hostname = "server-appliance"
+
+        server.vm.network "public_network",
+		    use_dhcp_assigned_default_route: true
+        server.vm.network "private_network", ip: "192.168.120.1",
+            virtualbox__intnet: "lan"
+        server.vm.network "private_network", ip: "192.168.121.1",
+            virtualbox__intnet: "dmz"
+
+        $scriptServer = <<-'SCRIPT'
+            echo 1 > /proc/sys/net/ipv4/ip_forward
+            echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+            iptables -t nat -A POSTROUTING -o enp0s8 -j MASQUERADE
+            #Crea una unidad systemd para hacer persistente NAT al inicio
+            cp /vagrant/masquerade.iptables /srv/
+            cp /vagrant/iptables.service /etc/systemd/system/iptables.service
+            systemctl enable iptables.service
+            systemctl start iptables.service
+            #Instala y configura DHCP
+            sudo apt-get update
+            sudo apt-get install -y isc-dhcp-server
+            sed -i 's/INTERFACESv4=""/INTERFACESv4="enp0s9 enp0s10"/g' /etc/default/isc-dhcp-server
+            cp /vagrant/dhcpd.conf /etc/dhcp/dhcpd.conf
+            service isc-dhcp-server restart
+        SCRIPT
+
+        server.vm.provision "server_once", type: "shell" do |fo|
+          fo.inline = $scriptServer
+        end
+
+    end
+
+  # Para levantar la maquina se requiere vagrant up dmz
+  config.vm.define "lan", autostart:false do |lan|
+         lan.vm.box = "ubuntu/focal64"
+         lan.vm.hostname = "lan-client"
+
+         lan.vm.network "private_network", type: "dhcp",
+                 virtualbox__intnet: "lan"
+  end
+
+  # Para levantar la maquina se requiere vagrant up dmz
+  config.vm.define "dmz", autostart:false do |dmz|
+         dmz.vm.box = "ubuntu/focal64"
+         dmz.vm.hostname = "dmz-client"
+
+         dmz.vm.network "private_network", type: "dhcp",
+                 virtualbox__intnet: "dmz"
+  end
+
+  # Para levantar la maquina se requiere vagrant up dmz
+  config.vm.define "outlander", autostart:false do |outlander|
+         outlander.vm.box = "axenedu/ubuntu-focal64-desktop"
+         outlander.vm.hostname = "outlander"
+
+         outlander.vm.network "public_network", type: "dhcp"
+  end
+
+  $scriptAlways = <<-'SCRIPT'
+     sudo ip r del default via 10.0.2.2
+     ping -c 2 google.com
+  SCRIPT
+
+  config.vm.provision "todas_siempre", type: "shell",
+	run: "always" do |ts|
+    ts.inline = $scriptAlways
+  end
+
+end
