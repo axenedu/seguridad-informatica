@@ -64,11 +64,13 @@ Vagrant.configure("2") do |config|
      useradd -s /bin/bash -p `mkpasswd  -m sha-512 accounting` accounting
      useradd -s /bin/bash -p `mkpasswd  -m sha-512 kenny` kenny
      useradd -s /bin/bash -p `mkpasswd  -m sha-512 fred` fred
+     useradd -s /bin/bash -p `mkpasswd  -m sha-512 jan` jan
      useradd -s /bin/bash -p `mkpasswd  -m sha-512 lisa` lisa
      mkdir /accounting
      chown accounting:accounting /accounting
      chmod g+w /accounting/
      chmod o-rwx /accounting/
      usermod -a -G accounting fred
+     usermod -a -G accounting jan
   SHELL
 end
